@@ -1,0 +1,40 @@
+
+host: atlambda.dip.jp
+port: 16665
+nick: nick
+user: username
+real: realname
+pass: tobiuoinstall
+
+plugin_dir: ./plugins
+
+plugins:
+#  - class: EchoBot
+#    channel: "#monadnet"
+  - file: dice.rb
+    class: DiceBot
+    channel: "#monadnet"
+  - class: OpStore
+  - file: logger.rb
+    class: LoggerBot
+    directory: log
+    charset: utf8
+    commands: privmsg,notice,join,part,topic,kick,mode,nick
+  - file: rss.rb
+    class: RSSBot
+    channel: "#rss"
+    urls:
+      - "http://rss.yomiuri.co.jp/rss/yol/latestnews30"
+      - "http://www3.nhk.or.jp/rss/news/cat0.xml"
+    interval: 360
+  - file: dic.rb
+    class: DicBot
+    channel: "#monadnet"
+#  - file: youtube.rb
+#    class: YouTubeBot
+#    channel: "#monadnet" 
+#    mp4box_path: "MP4Box"
+#    audio_dir: "/home/atmonad/public_html/btmonad_yt"
+#    audio_url: "http://atlambda.dip.jp/~atmonad/btmonad_yt"
+#    playlist: "music.m3u"
+

@@ -1,3 +1,6 @@
 log/
 
-*.yaml
+config.yaml
+
+*~
+*.tmp
