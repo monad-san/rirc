@@ -1,4 +1,3 @@
-
 host: atlambda.dip.jp
 port: 16665
 nick: nick
@@ -11,9 +10,9 @@ plugin_dir: ./plugins
 plugins:
 #  - class: EchoBot
 #    channel: "#monadnet"
-  - file: dice.rb
-    class: DiceBot
-    channel: "#monadnet"
+#  - file: dice.rb
+#    class: DiceBot
+#    channel: "#monadnet"
   - class: OpStore
   - file: logger.rb
     class: LoggerBot
@@ -30,11 +29,10 @@ plugins:
   - file: dic.rb
     class: DicBot
     channel: "#monadnet"
-#  - file: youtube.rb
-#    class: YouTubeBot
-#    channel: "#monadnet" 
-#    mp4box_path: "MP4Box"
-#    audio_dir: "/home/atmonad/public_html/btmonad_yt"
-#    audio_url: "http://atlambda.dip.jp/~atmonad/btmonad_yt"
-#    playlist: "music.m3u"
-
+  - file: youtube.rb
+    class: YouTubeBot
+    channel: "#monadnet" 
+    mp4box_path: "MP4Box"
+    audio_dir: "/home/atmonad/public_html/btmonad_yt"
+    audio_url: "http://atlambda.dip.jp/~atmonad/btmonad_yt"
+    playlist: "music.m3u"
