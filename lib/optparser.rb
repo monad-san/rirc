@@ -16,6 +16,10 @@ module Btmonad
       opt.on('-d', '--directory directory', "set directory where configfile is existed") do |dir|
         Btmonad::DCONF_PATH = dir
       end
+
+      opt.on('--quiet', "quiet by inactivate") do |v|
+        Btmonad::daemon
+      end
     end
   end
 end
