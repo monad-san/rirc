@@ -22,7 +22,7 @@ class YouTubeBot < Btmonad::Bot
         uefsm = nil
 
         doc = Nokogiri.HTML(open(url).read)
-        fv = doc.xpath('//embed[@id="movie_player"]')[0]["flashvars"]
+        fv = doc.css('embed#movie_player')[0]["flashvars"]
         fv.split("&").each do |fp|
           if fp =~ /^url\_encoded\_fmt\_stream\_map\=(.*)/ then
             uefsm = URI.decode($1)
@@ -71,4 +71,3 @@ class YouTubeBot < Btmonad::Bot
     end
   end
 end
-
