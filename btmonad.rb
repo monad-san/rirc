@@ -22,6 +22,7 @@ module Btmonad
   require 'lib/client'
   require 'lib/driver'
 
+  SELF_PATH = File.dirname(File.expand_path(__FILE__))
   class << self
     def daemon(nochdir = nil, noclose = nil)
       if Process.respond_to? :daemon
@@ -46,5 +47,5 @@ module Btmonad
   OptParser.parse!(ARGV)
 
   DCONF_FILE = 'config.yaml' unless defined? DCONF_FILE
-  DCONF_PATH = File.join(File.dirname(File.expand_path(__FILE__)), DCONF_FILE) unless defined? DCONF_PATH
+  DCONF_PATH = File.join(SELF_PATH, DCONF_FILE) unless defined? DCONF_PATH
 end
