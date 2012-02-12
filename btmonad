@@ -12,5 +12,6 @@
 #$:.unshift(File.dirname(self_file) + '/lib')
 
 require './btmonad'
+#Btmonad.daemon
 Btmonad::Driver.run
 

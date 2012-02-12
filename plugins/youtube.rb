@@ -17,11 +17,18 @@ class YouTubeBot < Btmonad::Bot
   def ch_privmsg(m)
     if m =~ /video\:\s*(http\:\/\/www\.youtube\.com\/.+?)(\s|$)/ then
       Thread.new(self, $1) do |p, url|
+        swf = ""
         vurls = {}
         vid = nil
         uefsm = nil
 
-        doc = Nokogiri.HTML(open(url).read)
+        open(url).each do |l|
+          if l =~ /var\s+swf\s+=\s+(\".+\")\;/
+            swf = String.class_eval('new(' << $1.gsub(/\\u([0-9a-f]{4})/){[$1.hex].pack("U")} << ')')
+          end
+        end
+
+        doc = Nokogiri.HTML(swf)
         fv = doc.css('embed#movie_player')[0]["flashvars"]
         fv.split("&").each do |fp|
           if fp =~ /^url\_encoded\_fmt\_stream\_map\=(.*)/ then
