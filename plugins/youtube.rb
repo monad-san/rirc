@@ -15,7 +15,7 @@ class YouTubeBot < Btmonad::Bot
   end
   
   def ch_privmsg(m)
-    if m =~ /video\:\s*(http\:\/\/www\.youtube\.com\/.+?)(\s|$)/ then
+    if m =~ /v\s+(http\:\/\/www\.youtube\.com\/.+?)(\s|$)/ then
       Thread.new(self, $1) do |p, url|
         swf = ""
         vurls = {}

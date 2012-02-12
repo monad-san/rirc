@@ -3,7 +3,7 @@ require 'open-uri'
 
 class DicBot < Btmonad::Bot
   def ch_privmsg(m)
-    if m =~ /dic\:(.+)/ then
+    if m =~ /d\s+(.+)/ then
       word = $1.toutf8
       if word =~ /^[a-zA-Z]+$/ then
         surl = "http://public.dejizo.jp/NetDicV09.asmx/SearchDicItemLite" \
