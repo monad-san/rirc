@@ -8,10 +8,15 @@ class FeedReader
   end
 
   def feed_read
-    @rss = open(@url){|feed| RSS::Parser.parse(feed.read, false)}
+    begin
+      @rss = open(@url){|feed| RSS::Parser.parse(feed.read, false)}
+    rescue OpenURI::HTTPError => ex
+      return { :error => ex }
+    end
+
     @rss.output_encoding = "UTF-8"
     rss_items = {}
-    
+
     pmax_time = @read_line
     @rss.items.each{|item|
       if item.date > @read_line then
@@ -34,35 +39,50 @@ class RSSBot < Btmonad::Bot
     @interval = config["interval"]
     @t = nil
   end
-  
+
   def on_active
     frs = @urls.map {|u| FeedReader.new(u) }
 
     if @t.nil? then
       @t = Thread.new(self) do |p|
-        frs.each do |fr|
-          sorted_feeds = []
-          s = ""
-          
-          items = fr.feed_read
-          items.sort{|a, b| b[0] <=> a[0]}.each do |d, item|
-            sorted_feeds.push item
-          end
-
-          sorted_feeds[0..9].reverse.each do |item|
-            s = item.title + " " + p.abbrurl(item.link)
-            p.privmsg s.tojis
-          end
-        end
-        loop do
-          sleep @interval
+        begin
           frs.each do |fr|
-            feeds = fr.feed_read
-            feeds.each_value do |item|
+            sorted_feeds = []
+            s = ""
+            items = nil
+
+            while true
+              items = fr.feed_read
+              break unless items.key?(:error)
+              p.privmsg items[:error].to_s[0..200]
+            end
+
+            items.sort{|a, b| b[0] <=> a[0]}.each do |d, item|
+              sorted_feeds.push item
+            end
+
+            sorted_feeds[0..9].reverse.each do |item|
               s = item.title + " " + p.abbrurl(item.link)
               p.privmsg s.tojis
             end
           end
+          loop do
+            sleep @interval
+            frs.each do |fr|
+              loop do
+                items = fr.feed_read
+                break unless items.key?(:error)
+                p.privmsg items[:error].to_s[0..200]
+              end
+              feeds = fr.feed_read
+              feeds.each_value do |item|
+                s = item.title + " " + p.abbrurl(item.link)
+                p.privmsg s.tojis
+              end
+            end
+          end
+        rescue => e
+          p.privmsg e.to_s[0..200]
         end
       end
     end
