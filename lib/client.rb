@@ -52,6 +52,7 @@ module Btmonad
     end
       
     def reload_config
+
       opc_hash = {}
       present_bots = Set[]
       diff = {:updated => {},
@@ -80,15 +81,14 @@ module Btmonad
       end
       wasted_bots = Set.new(@bots.keys) - present_bots
       for wb in wasted_bots
-        diff[:wasted].add(p)
+        diff[:wasted].add(wb)
       end
 
-#      STDERR.puts "Config Differences : " + diff.pretty_inspect
       diff
     end
 
     def delete_bots(config)
-      for wbn in config[:wasted] + config[:updated].keys
+      for wbn in (config[:wasted] + config[:updated].keys).to_a
         @bots[wbn].close
         @bots.delete(wbn)
       end
@@ -119,7 +119,6 @@ module Btmonad
     end
 
     def apply_bots(botclasses)
-#      STDERR.puts botclasses.pretty_inspect
       botclasses.each_pair do |key, bc|
         @bots[key] = bc.new(Proc.new{|command, *args| post(command, *args)}, Driver::BotConfigs[key], @channels, @is_logged_in)
       end

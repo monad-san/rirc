@@ -8,7 +8,7 @@ module Btmonad
       @post = post
       @channels = channels
       @ili = is_logged_in
-      
+
       if !config["channel"].nil? then
         @owning_chs = [config["channel"]]
       elsif !config["channels"].nil? then
@@ -16,15 +16,15 @@ module Btmonad
       else
         @owning_chs = []
       end
-      
-      bot_init(config)
-    end
 
-    def bot_init(config)
+      bot_init(config)
       if @ili == true then
         join_owing_chs
         on_active
       end
+    end
+
+    def bot_init(config)
     end
     
     def join_owing_chs
@@ -34,27 +34,31 @@ module Btmonad
     end
 
     def close
+#      @log.debug("Bot Killed: #{self}")
       for ch in @owning_chs
         part(ch)
       end
     end
     
     def part(ch)
+#      @log.debug("Part Stack: #{@channels}")
       if @channels.has_key?(ch) then
-        @post.call 'PART', ch
         @channels[ch] -= 1
+#        @log.debug("Part Judge(#{ch}): #{@channels[ch]}")
         if @channels[ch] <= 0 then
+          @post.call 'PART', ch
           @channels.delete(ch)
         end
       end
     end
 
     def join(ch)
-      if !@channels.has_key?(ch) then
+      unless @channels.has_key?(ch) then
         @post.call 'JOIN', ch
         @channels[ch] = 0
       end
       @channels[ch] += 1
+#      @log.debug("Join Stack: #{@channels}")
     end
     
     def privmsg(s)
