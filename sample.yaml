@@ -6,31 +6,34 @@ real: realname
 pass: tobiuoinstall
 
 plugin_dir: ./plugins
+plugins_enabled:
+  - DiceBot
+  - LoggerBot
+  - RSSBot
+  - DicBot
 
 plugins:
-#  - class: EchoBot
-#    channel: "#monadnet"
-#  - file: dice.rb
-#    class: DiceBot
-#    channel: "#monadnet"
-  - class: OpStore
-  - file: logger.rb
-    class: LoggerBot
+  EchoBot:
+    channel: "#monadnet"
+  DiceBot:
+    file: dice.rb
+    channel: "#monadnet"
+  LoggerBot:
+    file: logger.rb
     directory: log
     charset: utf8
     commands: privmsg,notice,join,part,topic,kick,mode,nick
-  - file: rss.rb
-    class: RSSBot
+  RSSBot:
+    file: rss.rb
     channel: "#rss"
     urls:
-      - "http://rss.yomiuri.co.jp/rss/yol/latestnews30"
       - "http://www3.nhk.or.jp/rss/news/cat0.xml"
     interval: 360
-  - file: dic.rb
-    class: DicBot
+  DicBot:
+    file: dic.rb
     channel: "#monadnet"
-  - file: youtube.rb
-    class: YouTubeBot
+  YouTubeBot:
+    file: youtube.rb
     channel: "#monadnet" 
     mp4box_path: "MP4Box"
     audio_dir: "/home/atmonad/public_html/btmonad_yt"

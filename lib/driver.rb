@@ -13,7 +13,7 @@ module Btmonad
           :real => Config["real"],
           :pass => Config["pass"],
         }).start
-        
+
       end
 
       private
@@ -25,17 +25,21 @@ module Btmonad
 
       def load_bots
         plugin_dir = File.join(File.dirname(DCONF_PATH), Config["plugin_dir"])
-        for p in Config["plugins"]
-          if p["file"] then
-            file = p["file"]
-          else
-            file = p["class"].downcase + ".rb"
+        for p in Config["plugins_enabled"]
+          pconf = {}
+          if Config["plugins"][p]
+            pconf = Config["plugins"][p]
           end
-          
+          if pconf["file"] then
+            file = pconf["file"]
+          else
+            file = p.downcase + ".rb"
+          end
+
           load File.join(plugin_dir, file)
 
-          unless BotClasses[p["class"]].nil? then
-            BotConfigs[p["class"]] = p
+          unless BotClasses[p].nil? then
+            BotConfigs[p] = pconf
           else
             raise NoBotClassException
           end
@@ -47,7 +51,7 @@ module Btmonad
 
     BotClasses = {}
     BotConfigs = {}
-    
+
   end
 end
 

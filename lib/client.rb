@@ -34,7 +34,7 @@ module Btmonad
           b.send("on_message",m)
         end
       end
-      
+
 #      true unless method_name == "on_ping" || method_name == "on_rpl_isupport" || method_name == "on_rpl_welcome"
     end
 
@@ -54,29 +54,33 @@ module Btmonad
     def reload_config
       opc_hash = {}
       present_bots = Set[]
-      diff = {:updated => [],
-              :wasted  => [],
-              :new     => [],}
+      diff = {:updated => {},
+              :wasted  => Set[],
+              :new     => {},}
       
-      for op in Config["plugins"]
-        opc_hash[op["class"]] = op
+      for op in Config["plugins_enabled"]
+        opc_hash[op] = Config["plugins"][op]
       end
 
       Config.loadfile
       
-      for p in Config["plugins"]
-        present_bots.add(p["class"])
-        if @bots.key?(p["class"]) then
-          if opc_hash[p["class"]].inspect != p.inspect then
-            diff[:updated].push p
+      for p in Config["plugins_enabled"]
+        pconf = {}
+        if Config["plugins"][p]
+          pconf = Config["plugins"][p]
+        end
+        present_bots.add(p)
+        if @bots.key?(p) then
+          if opc_hash[p].inspect != pconf.inspect then
+            diff[:updated][p] = pconf
           end
         else
-          diff[:new].push p
+          diff[:new][p] = pconf
         end
       end
       wasted_bots = Set.new(@bots.keys) - present_bots
       for wb in wasted_bots
-        diff[:wasted].push({ "class" => wb })
+        diff[:wasted].add(p)
       end
 
 #      STDERR.puts "Config Differences : " + diff.pretty_inspect
@@ -84,9 +88,9 @@ module Btmonad
     end
 
     def delete_bots(config)
-      for wbn in config[:wasted] + config[:updated]
-        @bots[wbn["class"]].close
-        @bots.delete(wbn["class"])
+      for wbn in config[:wasted] + config[:updated].keys
+        @bots[wbn].close
+        @bots.delete(wbn)
       end
     end
       
@@ -94,18 +98,18 @@ module Btmonad
       botclasses = {}
       plugin_dir = File.join(File.dirname(DCONF_PATH), Config["plugin_dir"])
 
-      for p in config[:new] + config[:updated]
-        if p["file"] then
-          file = p["file"]
+      config[:new].merge(config[:updated]).each_pair do |p, pconf|
+        if pconf["file"] then
+          file = pconf["file"]
         else
-          file = p["class"].downcase + ".rb"
+          file = p.downcase + ".rb"
         end
 
         load File.join(plugin_dir, file)
 
-        if bc = Driver::BotClasses[p["class"]] then
-          Driver::BotConfigs[p["class"]] = p
-          botclasses[p["class"]] = bc
+        if bc = Driver::BotClasses[p] then
+          Driver::BotConfigs[p] = pconf
+          botclasses[p] = bc
         else
           raise NoBotClassException
         end
