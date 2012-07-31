@@ -1,30 +1,42 @@
 require 'rss'
 require 'open-uri'
+require 'digest/sha2'
+require 'logger'
 
 class FeedReader
-  def initialize(url, init_time = Time::at(0))
-    @read_line = init_time
+  def initialize(url, min_time = Time::at(0))
+#    @min_time = min_time
     @url = url
+    @hashes = []
   end
 
-  def feed_read
+  def read_feeds(log)
     begin
       @rss = open(@url){|feed| RSS::Parser.parse(feed.read, false)}
     rescue OpenURI::HTTPError => ex
-      return { :error => ex }
+      return :error
     end
-
     @rss.output_encoding = "UTF-8"
-    rss_items = {}
+    log.debug("RSS Updated: #{@hashes.map{|s| s.unpack('H*')[0][0..10]}}")
 
-    pmax_time = @read_line
-    @rss.items.each{|item|
-      if item.date > @read_line then
-        rss_items[item.date] = item
-        pmax_time = pmax_time < item.date ? item.date : pmax_time
+    rss_items = []
+#    pmax_time = @min_time
+    @rss.items.each do |item|
+      item_hash = Digest::SHA512.digest(item.inspect)
+      log.debug("New Hash: #{item_hash.unpack('H*')[0][0..10]}")
+      unless @hashes.include?(item_hash) then
+        rss_items.push item
+        @hashes.push item_hash
+        @hashes.shift if @hashes.length > 1000
       end
-    }
-    @read_line = pmax_time
+#      log.debug("Items show: #{item.inspect}")
+#      if item.date > @min_time then
+#        rss_items.push item
+#        pmax_time = pmax_time < item.date ? item.date : pmax_time
+#      end
+    end
+#    @min_time = pmax_time
+#    log.debug("Updated time border: #{@min_time}")
 
     rss_items
   end
@@ -34,6 +46,9 @@ end
 class RSSBot < Btmonad::Bot
   def bot_init(config)
     super(config)
+
+    @log = Logger.new(STDOUT)
+    @log.level = Logger::DEBUG
 
     @urls = config["urls"]
     @interval = config["interval"]
@@ -46,43 +61,13 @@ class RSSBot < Btmonad::Bot
     if @t.nil? then
       @t = Thread.new(self) do |p|
         begin
-          frs.each do |fr|
-            sorted_feeds = []
-            s = ""
-            items = nil
-
-            while true
-              items = fr.feed_read
-              break unless items.key?(:error)
-              p.privmsg items[:error].to_s[0..200]
-            end
-
-            items.sort{|a, b| b[0] <=> a[0]}.each do |d, item|
-              sorted_feeds.push item
-            end
-
-            sorted_feeds[0..9].reverse.each do |item|
-              s = item.title + " " + p.abbrurl(item.link)
-              p.privmsg s.tojis
-            end
-          end
+          show_feeds(frs, p, true)
           loop do
             sleep @interval
-            frs.each do |fr|
-              loop do
-                items = fr.feed_read
-                break unless items.key?(:error)
-                p.privmsg items[:error].to_s[0..200]
-              end
-              feeds = fr.feed_read
-              feeds.each_value do |item|
-                s = item.title + " " + p.abbrurl(item.link)
-                p.privmsg s.tojis
-              end
-            end
+            show_feeds(frs, p)
           end
         rescue => e
-          p.privmsg e.to_s[0..200]
+          @log.debug(e)
         end
       end
     end
@@ -99,6 +84,26 @@ class RSSBot < Btmonad::Bot
       return abbr
     end
     url
+  end
+
+  private
+  def show_feeds(frs, p, is_init = false)
+    frs.each do |fr|
+      items = nil
+
+      loop do
+        items = fr.read_feeds(@log)
+        break if items != :error
+      end
+
+      if is_init
+        items = items.sort{|a, b| b.date <=> a.date}[0..9].reverse
+      end
+      items.each do |item|
+        s = item.title + " " + p.abbrurl(item.link)
+        p.privmsg s.tojis
+      end
+    end
   end
 end
 
