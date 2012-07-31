@@ -5,7 +5,6 @@ require 'logger'
 
 class FeedReader
   def initialize(url, min_time = Time::at(0))
-#    @min_time = min_time
     @url = url
     @hashes = []
   end
@@ -17,26 +16,18 @@ class FeedReader
       return :error
     end
     @rss.output_encoding = "UTF-8"
-    log.debug("RSS Updated: #{@hashes.map{|s| s.unpack('H*')[0][0..10]}}")
+#    log.debug("RSS Updated: #{@hashes.map{|s| s.unpack('H*')[0][0..10]}}")
 
     rss_items = []
-#    pmax_time = @min_time
     @rss.items.each do |item|
       item_hash = Digest::SHA512.digest(item.inspect)
-      log.debug("New Hash: #{item_hash.unpack('H*')[0][0..10]}")
+#      log.debug("New Hash: #{item_hash.unpack('H*')[0][0..10]}")
       unless @hashes.include?(item_hash) then
         rss_items.push item
         @hashes.push item_hash
         @hashes.shift if @hashes.length > 1000
       end
-#      log.debug("Items show: #{item.inspect}")
-#      if item.date > @min_time then
-#        rss_items.push item
-#        pmax_time = pmax_time < item.date ? item.date : pmax_time
-#      end
     end
-#    @min_time = pmax_time
-#    log.debug("Updated time border: #{@min_time}")
 
     rss_items
   end
@@ -100,7 +91,7 @@ class RSSBot < Btmonad::Bot
         items = items.sort{|a, b| b.date <=> a.date}[0..9].reverse
       end
       items.each do |item|
-        s = item.title + " " + p.abbrurl(item.link)
+        s = item.title[0..250] + " " + p.abbrurl(item.link)
         p.privmsg s.tojis
       end
     end
