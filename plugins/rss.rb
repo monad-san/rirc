@@ -1,6 +1,7 @@
 require 'rss'
 require 'open-uri'
 require 'digest/sha2'
+require 'logger'
 
 class FeedReader
   def initialize(url, min_time = Time::at(0))
@@ -8,7 +9,7 @@ class FeedReader
     @hashes = []
   end
 
-  def read_feeds(log)
+  def read_feeds()
     begin
       @rss = open(@url){|feed| RSS::Parser.parse(feed.read, false)}
     rescue OpenURI::HTTPError => ex
@@ -82,7 +83,7 @@ class RSSBot < Btmonad::Bot
       items = nil
 
       loop do
-        items = fr.read_feeds(@log)
+        items = fr.read_feeds
         break if items != :error
       end
 
