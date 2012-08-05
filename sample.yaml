@@ -1,9 +1,9 @@
-host: atlambda.dip.jp
-port: 16665
+host: server
+port: 6665
 nick: nick
 user: username
 real: realname
-pass: tobiuoinstall
+pass: pass
 
 plugin_dir: ./plugins
 plugins_enabled:
@@ -33,10 +33,10 @@ plugins:
   DicBot:
     file: dic.rb
     channel: "#monadnet"
-  YouTubeBot:
-    file: youtube.rb
+  VideoBot:
+    file: video.rb
     channel: "#monadnet" 
     mp4box_path: "MP4Box"
-    audio_dir: "/home/atmonad/public_html/btmonad_yt"
-    audio_url: "http://atlambda.dip.jp/~atmonad/btmonad_yt"
-    playlist: "music.m3u"
+    audio_dir: "/home/user/music/"
+    nv_user: "user"
+    nv_pass: "pass"
