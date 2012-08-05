@@ -29,6 +29,7 @@ plugins:
     urls:
       - "http://www3.nhk.or.jp/rss/news/cat0.xml"
     interval: 360
+    waitretry: 30
   DicBot:
     file: dic.rb
     channel: "#monadnet"

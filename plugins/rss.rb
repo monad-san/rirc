@@ -1,6 +1,7 @@
 require 'rss'
 require 'open-uri'
 require 'digest/sha2'
+require 'logger'
 
 class FeedReader
   def initialize(url, min_time = Time::at(0))
@@ -8,12 +9,15 @@ class FeedReader
     @hashes = []
   end
 
-  def read_feeds(log)
+  def read_feeds()
     begin
       @rss = open(@url){|feed| RSS::Parser.parse(feed.read, false)}
-    rescue OpenURI::HTTPError => ex
-      return :error
+    rescue OpenURI::HTTPError => err
+      @log.debug(err)
+      sleep @waitretry
+      retry
     end
+
     @rss.output_encoding = "UTF-8"
 #    log.debug("RSS Updated: #{@hashes.length}")
 
@@ -42,6 +46,7 @@ class RSSBot < Btmonad::Bot
 
     @urls = config["urls"]
     @interval = config["interval"]
+    @waitretry = config["waitretry"]
     @t = nil
   end
 
@@ -70,7 +75,13 @@ class RSSBot < Btmonad::Bot
 
   def abbrurl(url)
     if url.length >= 200 then
-      abbr = open("http://tinyurl.com/api-create.php?url=" + url).read
+      begin
+        abbr = open("http://tinyurl.com/api-create.php?url=" + url).read
+      rescue OpenURI::HTTPError => err
+        @log.debug(err)
+        sleep @waitretry
+        retry
+      end
       return abbr
     end
     url
@@ -82,7 +93,7 @@ class RSSBot < Btmonad::Bot
       items = nil
 
       loop do
-        items = fr.read_feeds(@log)
+        items = fr.read_feeds
         break if items != :error
       end
 
