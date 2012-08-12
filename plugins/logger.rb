@@ -40,7 +40,7 @@ class LoggerBot < Btmonad::Bot
         ps = Dir.glob(File.join(File.dirname(Btmonad::DCONF_PATH), @log_dir) + "/*")
         for p in ps
           p = File.join(p, Time.now.strftime(filename))
-          file.open(p,'a') {|f| f.puts l } unless p.nil?
+          File.open(p,'a') {|f| f.puts l } unless p.nil?
         end
         return
       else
