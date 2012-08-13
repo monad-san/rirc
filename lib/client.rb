@@ -52,7 +52,6 @@ module Btmonad
     end
       
     def reload_config
-
       opc_hash = {}
       present_bots = Set[]
       diff = {:updated => {},
@@ -111,7 +110,7 @@ module Btmonad
           Driver::BotConfigs[p] = pconf
           botclasses[p] = bc
         else
-          raise NoBotClassException
+          raise NoBotClassesException
         end
       end
 
