@@ -1,4 +1,4 @@
 
 module Btmonad
-  class NoBotClassesException < Exception; end
+  class NotExistBotClassException < Exception; end
 end

@@ -21,6 +21,7 @@ module Btmonad
   require 'lib/bot'
   require 'lib/client'
   require 'lib/driver'
+  require 'lib/exception'
 
   SELF_PATH = File.dirname(File.expand_path(__FILE__))
   class << self
