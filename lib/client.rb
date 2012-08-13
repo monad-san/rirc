@@ -110,7 +110,7 @@ module Btmonad
           Driver::BotConfigs[p] = pconf
           botclasses[p] = bc
         else
-          raise NoBotClassesException
+          raise NotExistBotClassException
         end
       end
 
