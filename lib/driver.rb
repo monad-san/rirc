@@ -41,7 +41,7 @@ module Btmonad
           unless BotClasses[p].nil? then
             BotConfigs[p] = pconf
           else
-            raise NoBotClassException
+            raise NoBotClassesException
           end
         end
       end
