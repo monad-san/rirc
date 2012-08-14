@@ -80,6 +80,7 @@ class NicoVideo
   attr_reader :id
 
   def initialize(url, dest, param, user, pass)
+    @agent = Mechanize.new
     @nv_account = [user, pass]
 
     @dest = dest
@@ -118,7 +119,6 @@ class NicoVideo
   end
 
   def get_vurl
-    @agent = Mechanize.new
 
     @agent.get('https://secure.nicovideo.jp/secure/login_form')
     @agent.page.form_with(:action => 'https://secure.nicovideo.jp/secure/login?site=niconico') do |f|
@@ -126,6 +126,7 @@ class NicoVideo
       f.field_with(:name => 'password').value = @nv_account[1]
       f.click_button
     end
+    @agent.get("http://www.nicovideo.jp/watch/#{@id}")
     @agent.get("http://www.nicovideo.jp/api/getflv/#{@id}")
     @agent.page.body.split(/&/).each do |line|
       @vurl = $1 if line =~ /url=(.+)/
