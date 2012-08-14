@@ -4,7 +4,7 @@ class DiceBot < Btmonad::Bot
     s = ''
     t = 0
     
-    if m =~ /\#(\d+)d(\d+)/ then
+    if m =~ /^\#(\d+)d(\d+)/ then
       Integer($1).times do
         r = 1 + rand(Integer($2))
         s << " #{r}"
