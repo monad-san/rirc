@@ -27,7 +27,7 @@ plugins:
     file: rss.rb
     channel: "#rss"
     urls:
-      - "http://www3.nhk.or.jp/rss/news/cat0.xml"
+      - http://www3.nhk.or.jp/rss/news/cat0.xml
     interval: 360
     waitretry: 30
   DicBot:
@@ -35,8 +35,13 @@ plugins:
     channel: "#monadnet"
   VideoBot:
     file: video.rb
-    channel: "#monadnet" 
-    mp4box_path: "MP4Box"
-    audio_dir: "/home/user/music/"
-    nv_user: "user"
-    nv_pass: "pass"
+    channel: "#monadnet"
+    mp4box_path: MP4Box
+    audio_dir: /home/user/music/
+    nv_user: user
+    nv_pass: pass
+  SocialBot:
+    file: social.rb
+    channel: "#social"
+    access_token: token
+    access_secret: secret
