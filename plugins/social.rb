@@ -10,7 +10,7 @@ $log.level = Logger::DEBUG
 class TwitterGateway
   TweetTable = []
   DIGIT = 36
-  MAX_TABLE_LENGTH = DIGIT**2
+  MAX_TABLE_LENGTH = DIGIT**2 - 1
 
   BOT_USER_AGENT = "Lempicka"
   CONSUMER_KEY = "G5QFBnCLSCXNsW9JcbLUw"
@@ -146,11 +146,11 @@ else
 
     def ch_privmsg(m)
       begin
-        if m =~ /^t\s+(.*)$/
+        if m =~ /^(.*)\@t$/
           @tg.update(self, $1)
-        elsif m =~ /^r\$(.*?)\s+(.*)$/
-          @tg.update(self, $2, $1)
-        elsif m =~ /^f\$(.*?)(\s|$)/
+        elsif m =~ /^(.*)\@r\$([1-9a-z]{1,2})$/
+          @tg.update(self, $1, $2)
+        elsif m =~ /^f\$([1-9a-z]{1,2})/
           @tg.favorite(self, $1)
         end
       rescue => e
