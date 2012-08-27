@@ -1,10 +1,6 @@
 require 'mechanize'
 require 'nokogiri'
 require 'open-uri'
-require 'logger'
-
-$log = Logger.new(STDOUT)
-$log.level = Logger::DEBUG
 
 class YouTube
   attr_reader :id
@@ -46,13 +42,13 @@ class YouTube
     fv = doc.at_css('embed#movie_player')["flashvars"]
     url, fmt = nil
     fv.split("&").each do |fp|
-      $log.debug fp
+      @log.debug fp
       if fp =~ /^url\_encoded\_fmt\_stream\_map\=(.*)/ then
         URI.decode($1).split(",").each do |e|
           url = URI.decode(e.scan(/url\=(.*?)(\&|$)/)[0][0])
           if e =~ /itag\=(.*?)(\&|$)/ then
             fmt = $1.to_i
-            $log.debug "URL(fmt=#{fmt}): " << url 
+            @log.debug "URL(fmt=#{fmt}): " << url 
             urls[fmt] = url if @mp4fmt.include?(fmt)
           end
         end
@@ -92,12 +88,10 @@ class NicoVideo
   end
 
   def show_info
-    $log.debug "NicoVideo Info: Video ID = " << @id
-    $log.debug "NicoVideo Info: Video URL = " << @vurl
-    $log.debug "NicoVideo Info: type = " << @type
-    raise if @type != "mp4"
-#      raise NotSupportedFormatError if @type != "mp4"
-#    "Video URL(type=#{@type},id=#{@id}) = " << @vurl
+    @log.debug "NicoVideo Info: Video ID = " << @id
+    @log.debug "NicoVideo Info: Video URL = " << @vurl
+    @log.debug "NicoVideo Info: type = " << @type
+    raise NotSupportedFormatError if @type != "mp4"
   end
 
   def fetch
@@ -108,7 +102,6 @@ class NicoVideo
   private
   def get_info
     xml = open("http://ext.nicovideo.jp/api/getthumbinfo/#{@param}").read
-#    if xml =~ /title\>(.*?)\<\/title/ then
     if xml =~ /video_id\>(.*?)\<\/video_id/ then
       @id = $1
     end
@@ -134,6 +127,9 @@ class NicoVideo
   end
 end
 
+class NotSupportedFormatError < Exception; end
+class DestinationAlreadyExistsError < Exception; end
+
 class VideoBot < Btmonad::Bot
   def bot_init(config)
     super(config)
@@ -149,7 +145,7 @@ class VideoBot < Btmonad::Bot
   def ch_privmsg(m)
     l = m.split
     if l[0] == "v"
-      $log.debug(l)
+      @log.debug(l)
       Thread.new(self) do |p|
         begin
           url = l[1]
@@ -161,8 +157,7 @@ class VideoBot < Btmonad::Bot
           elsif url =~ /^http\:\/\/www\.nicovideo\.jp\/watch\/(.+)$/ then
             v = NicoVideo.new(url, @tmp_path, $1, @nv_user, @nv_pass)
           else
-            raise
-#          raise NotSupportedFormatError
+          raise NotSupportedFormatError
           end
 
           v.show_info
@@ -172,7 +167,7 @@ class VideoBot < Btmonad::Bot
           p.notice "Fetched."
           p.privmsg "Saved extract audio: " << extract(dest)
         rescue => e
-          $log.error e
+          @log.error e
         end
       end
     end
@@ -182,8 +177,7 @@ class VideoBot < Btmonad::Bot
   def extract(dest)
     dpath = File.join(@audio_dir, "#{dest}.m4a")
     if File.exists?(dpath) then
-      raise
-#    raise DestinationAlreadyExistsError
+      raise DestinationAlreadyExistsError
       return
     end
     system("#{@mp4box_path} -add #{@tmp_path}#audio -new #{dpath}")

@@ -34,8 +34,6 @@ module Btmonad
           b.send("on_message",m)
         end
       end
-
-#      true unless method_name == "on_ping" || method_name == "on_rpl_isupport" || method_name == "on_rpl_welcome"
     end
 
     def on_rpl_welcome(m)
@@ -121,7 +119,6 @@ module Btmonad
       botclasses.each_pair do |key, bc|
         @bots[key] = bc.new(Proc.new{|command, *args| post(command, *args)}, Driver::BotConfigs[key], @channels, @is_logged_in)
       end
-#      STDERR.puts @bots.pretty_inspect
     end
     
   end

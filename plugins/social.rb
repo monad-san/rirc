@@ -2,10 +2,6 @@ require 'net/https'
 require 'oauth'
 require 'json'
 require 'kconv'
-require 'logger'
-
-$log = Logger.new(STDERR)
-$log.level = Logger::DEBUG
 
 class TwitterGateway
   TweetTable = []
@@ -16,7 +12,8 @@ class TwitterGateway
   CONSUMER_KEY = "G5QFBnCLSCXNsW9JcbLUw"
   CONSUMER_SECRET = "fik8ey981xQj60AlmBhoEo0MkxESpaaRpbRGDL1Jg"
 
-  def initialize(config = nil)
+  def initialize(log, config = nil)
+    @log = log
     @consumer = OAuth::Consumer.new(
       CONSUMER_KEY,
       CONSUMER_SECRET,
@@ -62,7 +59,7 @@ class TwitterGateway
           end
         end
       rescue Timeout::Error, StandardError
-        $log.debug "Reconnecting to twitter..."
+        @log.debug "Reconnecting to twitter..."
       end
     end
   end
@@ -137,7 +134,7 @@ else
           begin
             @tg.mainloop(p)
           rescue => e
-            $log.debug(e)
+            @log.debug(e)
             retry
           end
         end
@@ -154,7 +151,7 @@ else
           @tg.favorite(self, $1)
         end
       rescue => e
-        $log.debug(e)
+        @log.debug(e)
         retry
       end
     end

@@ -1,10 +1,10 @@
 require 'rss'
 require 'open-uri'
 require 'digest/sha2'
-require 'logger'
 
 class FeedReader
-  def initialize(url, min_time = Time::at(0))
+  def initialize(log, url, min_time = Time::at(0))
+    @log = log
     @url = url
     @hashes = []
   end
@@ -19,12 +19,12 @@ class FeedReader
     end
 
     @rss.output_encoding = "UTF-8"
-#    log.debug("RSS Updated: #{@hashes.length}")
+    @log.debug("RSS Updated: #{@hashes.length}")
 
     rss_items = []
     @rss.items.each do |item|
       item_hash = Digest::SHA512.digest(item.link.inspect)
-#      log.debug("Hash: #{@hashes.include?(item_hash) ? 'Included' : 'New!' } (#{item_hash.unpack('H*')[0][0..5]})#{item.title[0..10]}")
+      @log.debug("Hash: #{@hashes.include?(item_hash) ? 'Included' : 'New!' } (#{item_hash.unpack('H*')[0][0..5]})#{item.title[0..10]}")
       unless @hashes.include?(item_hash) then
         rss_items.push item
         @hashes.push item_hash
@@ -41,9 +41,6 @@ class RSSBot < Btmonad::Bot
   def bot_init(config)
     super(config)
 
-    @log = Logger.new(STDOUT)
-    @log.level = Logger::DEBUG
-
     @urls = config["urls"]
     @interval = config["interval"]
     @waitretry = config["waitretry"]
@@ -51,7 +48,7 @@ class RSSBot < Btmonad::Bot
   end
 
   def on_active
-    frs = @urls.map {|u| FeedReader.new(u) }
+    frs = @urls.map {|u| FeedReader.new(@log, u) }
 
     if @t.nil? then
       @t = Thread.new(self) do |p|
