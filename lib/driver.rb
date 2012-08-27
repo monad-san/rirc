@@ -4,7 +4,8 @@ module Btmonad
     class << self
 
       def run
-        load_config
+        Config.load
+        Log.open(File.expand_path(Config["logfile"], SELF_PATH))
         load_bots
 
         Client.new(Config["host"], Config["port"], {
@@ -13,18 +14,12 @@ module Btmonad
           :real => Config["real"],
           :pass => Config["pass"],
         }).start
-
       end
 
       private
 
-      def load_config
-#        Config.setup unless File.exist?(configfile)
-        Config.loadfile
-      end
-
       def load_bots
-        plugin_dir = File.join(File.dirname(DCONF_PATH), Config["plugin_dir"])
+        plugin_dir = File.expand_path(Config["plugin_dir"], SELF_PATH)
         for p in Config["plugins_enabled"]
           pconf = {}
           if Config["plugins"][p]

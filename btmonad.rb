@@ -10,6 +10,8 @@ require 'optparse'
 require 'yaml'
 require 'thread'
 require 'kconv'
+require 'logger'
+require 'fileutils'
 
 require 'rubygems'
 require 'net/irc'
@@ -22,6 +24,7 @@ module Btmonad
   require 'lib/client'
   require 'lib/driver'
   require 'lib/exception'
+  require 'lib/log'
 
   SELF_PATH = File.dirname(File.expand_path(__FILE__))
   class << self
@@ -48,5 +51,5 @@ module Btmonad
   OptParser.parse!(ARGV)
 
   DCONF_FILE = 'config.yaml' unless defined? DCONF_FILE
-  DCONF_PATH = File.join(SELF_PATH, DCONF_FILE) unless defined? DCONF_PATH
+  DCONF_PATH = File.expand_path(DCONF_FILE, SELF_PATH) unless defined? DCONF_PATH
 end

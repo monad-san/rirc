@@ -5,6 +5,7 @@ module Btmonad
     attr_reader :channel
     
     def initialize(post, config, channels, is_logged_in)
+      @log = Log.plugin_logger(self.class.name)
       @post = post
       @channels = channels
       @ili = is_logged_in
@@ -34,17 +35,17 @@ module Btmonad
     end
 
     def close
-#      @log.debug("Bot Killed: #{self}")
+      Log.debug("Bot Killed: #{self}")
       for ch in @owning_chs
         part(ch)
       end
     end
     
     def part(ch)
-#      @log.debug("Part Stack: #{@channels}")
+      Log.debug("Part Stack: #{@channels}")
       if @channels.has_key?(ch) then
         @channels[ch] -= 1
-#        @log.debug("Part Judge(#{ch}): #{@channels[ch]}")
+        Log.debug("Part Judge(#{ch}): #{@channels[ch]}")
         if @channels[ch] <= 0 then
           @post.call 'PART', ch
           @channels.delete(ch)
@@ -58,7 +59,7 @@ module Btmonad
         @channels[ch] = 0
       end
       @channels[ch] += 1
-#      @log.debug("Join Stack: #{@channels}")
+      Log.debug("Join Stack: #{@channels}")
     end
     
     def privmsg(s)
@@ -108,7 +109,7 @@ module Btmonad
 
     def on_active
     end
-    
+
     def self.inherited(c)
       Driver::BotClasses[c.to_s] = c
     end
