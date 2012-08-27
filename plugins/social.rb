@@ -125,7 +125,7 @@ else
     def bot_init(config)
       super(config)
 
-      @tg = TwitterGateway.new(config)
+      @tg = TwitterGateway.new(@log, config)
     end
 
     def on_active
