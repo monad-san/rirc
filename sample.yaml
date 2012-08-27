@@ -5,6 +5,7 @@ user: username
 real: realname
 pass: pass
 
+logfile: ./log/debug
 plugin_dir: ./plugins
 plugins_enabled:
   - DiceBot
