@@ -60,6 +60,8 @@ class RSSBot < Btmonad::Bot
           end
         rescue => e
           @log.debug(e)
+          sleep @waitretry
+          retry
         end
       end
     end
