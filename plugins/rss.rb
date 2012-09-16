@@ -1,6 +1,7 @@
-require 'rss'
+require 'feed-normalizer'
 require 'open-uri'
 require 'digest/sha2'
+require 'openssl'
 
 class FeedReader
   def initialize(log, url, min_time = Time::at(0))
@@ -11,19 +12,18 @@ class FeedReader
 
   def read_feeds()
     begin
-      @rss = open(@url){|feed| RSS::Parser.parse(feed.read, false)}
+      @rss = FeedNormalizer::FeedNormalizer.parse(open(@url,"r",{:ssl_verify_mode=>OpenSSL::SSL::VERIFY_NONE}))
     rescue OpenURI::HTTPError => err
       @log.debug(err)
       sleep @waitretry
       retry
     end
 
-    @rss.output_encoding = "UTF-8"
     @log.debug("RSS Updated: #{@hashes.length}")
 
     rss_items = []
-    @rss.items.each do |item|
-      item_hash = Digest::SHA512.digest(item.link.inspect)
+    @rss.entries.each do |item|
+      item_hash = Digest::SHA512.digest(item.url.inspect)
       @log.debug("Hash: #{@hashes.include?(item_hash) ? 'Included' : 'New!' } (#{item_hash.unpack('H*')[0][0..5]})#{item.title[0..10]}")
       unless @hashes.include?(item_hash) then
         rss_items.push item
@@ -97,10 +97,10 @@ class RSSBot < Btmonad::Bot
       end
 
       if is_init
-        items = items.sort{|a, b| b.date <=> a.date}[0..9].reverse
+        items = items.sort{|a, b| b.last_updated <=> a.last_updated}[0..9].reverse
       end
       items.each do |item|
-        s = item.title[0..250] + " " + p.abbrurl(item.link)
+        s = item.title[0..250] + " " + p.abbrurl(item.url)
         p.privmsg s.tojis
       end
     end
