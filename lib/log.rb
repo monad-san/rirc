@@ -2,7 +2,7 @@
 module Btmonad
   module Log
     class << self
-      def open(path = "debug_log")
+      def open(path = "/dev/null")
         FileUtils.mkdir_p(File.dirname(path)) unless FileTest.exist?(File.dirname(path))
         @@log = Logger.new(path)
         @@log.level = Logger::DEBUG
