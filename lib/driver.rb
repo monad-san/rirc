@@ -5,7 +5,7 @@ module Btmonad
 
       def run
         Config.load
-        Log.open(File.expand_path(Config["logfile"], SELF_PATH))
+        Config["logfile"] ? Log.open(File.expand_path(Config["logfile"], SELF_PATH)) : Log.open
         load_bots
 
         Client.new(Config["host"], Config["port"], {
