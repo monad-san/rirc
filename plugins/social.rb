@@ -145,9 +145,9 @@ else
       begin
         if m =~ /^(.*)\@t$/
           @tg.update(self, $1)
-        elsif m =~ /^(.*)\@r\$([1-9a-z]{1,2})$/
+        elsif m =~ /^(.*)\@r\$([0-9a-z]{1,2})$/
           @tg.update(self, $1, $2)
-        elsif m =~ /^f\$([1-9a-z]{1,2})/
+        elsif m =~ /^f\$([0-9a-z]{1,2})/
           @tg.favorite(self, $1)
         end
       rescue => e
