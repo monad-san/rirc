@@ -17,7 +17,7 @@ class TwitterGateway
     @consumer = OAuth::Consumer.new(
       CONSUMER_KEY,
       CONSUMER_SECRET,
-      :site => 'http://twitter.com'
+      :site => 'https://api.twitter.com'
     )
     a = config ? config : get_access_token
     @access_token = OAuth::AccessToken.new(
@@ -33,7 +33,8 @@ class TwitterGateway
       to_id = TweetTable[in_reply_to.to_i(36)][:id]
       tweet = "@#{to_name} #{tweet.toutf8}"
     end
-    @access_token.post('/statuses/update.json',
+    out.notice "posting... > #{tweet}"
+    p @access_token.post('/1.1/statuses/update.json',
                        'status' => tweet.toutf8,
                        'in_reply_to_status_id' => to_id
                        )
@@ -66,7 +67,7 @@ class TwitterGateway
 
   private
   def connect
-    uri = URI.parse("https://userstream.twitter.com/2/user.json")
+    uri = URI.parse("https://userstream.twitter.com/1.1/user.json")
 
     https = Net::HTTP.new(uri.host, uri.port)
     https.use_ssl = true
