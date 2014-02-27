@@ -1,5 +1,5 @@
 
-module Btmonad
+module Rirc
   class Bot
 
     attr_reader :channel
@@ -76,7 +76,7 @@ module Btmonad
 
     def nick(s)
       @post.call 'NICK', s
-      Btmonad::Config["nick"] = s
+      Rirc::Config["nick"] = s
     end
     
     def on_rpl_welcome(m)
@@ -98,7 +98,7 @@ module Btmonad
     end
 
     def on_kick(m)
-      exit(1) if m[1] == Btmonad::Config["nick"]
+      exit(1) if m[1] == Rirc::Config["nick"]
     end
     
     def on_message(m)

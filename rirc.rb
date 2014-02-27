@@ -16,7 +16,7 @@ require 'fileutils'
 require 'rubygems'
 require 'net/irc'
 
-module Btmonad
+module Rirc
 
   require 'lib/optparser'
   require 'lib/config'

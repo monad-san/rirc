@@ -1,5 +1,9 @@
 
-class LoggerBot < Btmonad::Bot
+#
+# LoggerBot -- logging irc
+#
+
+class LoggerBot < Rirc::Bot
   def bot_init(config)
     @log_dir = config["directory"]
     @commands = config["commands"].split(",").map! {|c| c.downcase }
@@ -37,7 +41,7 @@ class LoggerBot < Btmonad::Bot
       elsif c == "nick" then
         l += " #{nick} -> #{m[0]}"
 
-        ps = Dir.glob(File.join(File.dirname(Btmonad::DCONF_PATH), @log_dir) + "/*")
+        ps = Dir.glob(File.join(File.dirname(Rirc::DCONF_PATH), @log_dir) + "/*")
         for p in ps
           p = File.join(p, Time.now.strftime(filename))
           File.open(p,'a') {|f| f.puts l } unless p.nil?
@@ -51,7 +55,7 @@ class LoggerBot < Btmonad::Bot
       if l == "" then
         raise NoStringLineException
       end
-      p = join_with_mkdir(File.dirname(Btmonad::DCONF_PATH), @log_dir, ch, Time.now.strftime(filename))
+      p = join_with_mkdir(File.dirname(Rirc::DCONF_PATH), @log_dir, ch, Time.now.strftime(filename))
       File.open(p,'a') {|f| f.puts l } unless p.nil?
     end
   end
@@ -61,7 +65,7 @@ class LoggerBot < Btmonad::Bot
     l = Time.now.strftime("%H:%M:%S")
     c = command.downcase
     ch = m[0]
-    nick = Btmonad::Config["nick"]
+    nick = Rirc::Config["nick"]
     
     if @ili && !(@commands.index(c).nil?) then
 #      STDERR.puts m.inspect
@@ -79,7 +83,7 @@ class LoggerBot < Btmonad::Bot
         end
       elsif c == "nick" then
         l += " My nick is changed (#{nick} -> #{m[0]})"
-        ps = Dir.glob(File.join(File.dirname(Btmonad::DCONF_PATH), @log_dir) + "/*")
+        ps = Dir.glob(File.join(File.dirname(Rirc::DCONF_PATH), @log_dir) + "/*")
         for p in ps
           p = File.join(p, Time.now.strftime(filename))
           File.open(p,'a') {|f| f.puts l } unless p.nil?
@@ -90,7 +94,7 @@ class LoggerBot < Btmonad::Bot
       end
 
 #      STDERR.puts l
-      p = join_with_mkdir(File.dirname(Btmonad::DCONF_PATH), @log_dir, ch, Time.now.strftime(filename))
+      p = join_with_mkdir(File.dirname(Rirc::DCONF_PATH), @log_dir, ch, Time.now.strftime(filename))
       File.open(p,'a') {|f| f.puts l } unless p.nil?
     end
   end

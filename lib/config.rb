@@ -1,5 +1,5 @@
 
-module Btmonad
+module Rirc
   module Config
     class << self
       def load(path = DCONF_PATH)

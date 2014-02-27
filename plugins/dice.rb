@@ -1,5 +1,9 @@
 
-class DiceBot < Btmonad::Bot
+#
+# DiceBot -- roll a dice
+#
+
+class DiceBot < Rirc::Bot
   def ch_privmsg(m)
     s = ''
     t = 0

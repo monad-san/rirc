@@ -1,8 +1,12 @@
 
-class OpStore < Btmonad::Bot
+#
+# OpStore -- distribute oper
+#
+
+class OpStore < Rirc::Bot
   def on_join(m)
     nick = m.prefix.split('!')[0]
-    if nick != Btmonad::Config["nick"]
+    if nick != Rirc::Config["nick"]
       @post.call "MODE", m[0], "+o", nick
     end
   end

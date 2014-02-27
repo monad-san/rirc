@@ -1,3 +1,8 @@
+
+#
+# RSSBot -- write RSS feeds
+#
+
 require 'feed-normalizer'
 require 'open-uri'
 require 'digest/sha2'
@@ -37,7 +42,7 @@ class FeedReader
   
 end
 
-class RSSBot < Btmonad::Bot
+class RSSBot < Rirc::Bot
   def bot_init(config)
     super(config)
 

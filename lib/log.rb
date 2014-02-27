@@ -1,5 +1,5 @@
 
-module Btmonad
+module Rirc
   module Log
     class << self
       def open(path = "/dev/null")

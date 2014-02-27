@@ -1,5 +1,5 @@
 
-module Btmonad
+module Rirc
   module Driver
     class << self
 

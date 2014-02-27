@@ -1,5 +1,5 @@
 
-module Btmonad
+module Rirc
   class Client < Net::IRC::Client
 
     def initialize(*args)

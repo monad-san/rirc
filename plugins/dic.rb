@@ -1,7 +1,12 @@
+
+#
+# DicBot -- online dictionary
+#
+
 require 'rexml/document'
 require 'open-uri'
 
-class DicBot < Btmonad::Bot
+class DicBot < Rirc::Bot
   def ch_privmsg(m)
     if m =~ /^\s*d\s+(.+)/ then
       word = $1.toutf8

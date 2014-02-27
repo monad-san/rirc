@@ -15,10 +15,10 @@ plugins_enabled:
 
 plugins:
   EchoBot:
-    channel: "#monadnet"
+    channel: "#channel"
   DiceBot:
     file: dice.rb
-    channel: "#monadnet"
+    channel: "#channel"
   LoggerBot:
     file: logger.rb
     directory: log
@@ -33,16 +33,4 @@ plugins:
     waitretry: 30
   DicBot:
     file: dic.rb
-    channel: "#monadnet"
-  VideoBot:
-    file: video.rb
-    channel: "#monadnet"
-    mp4box_path: MP4Box
-    audio_dir: /home/user/music/
-    nv_user: user
-    nv_pass: pass
-  SocialBot:
-    file: social.rb
-    channel: "#social"
-    access_token: token
-    access_secret: secret
+    channel: "#dic"

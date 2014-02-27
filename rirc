@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# btmonad
+# rirc -- irc bot written by ruby
 #
 
 #if File.symlink?(__FILE__)
@@ -11,7 +11,7 @@
 #end
 #$:.unshift(File.dirname(self_file) + '/lib')
 
-require './btmonad'
-#Btmonad.daemon
-Btmonad::Driver.run
+require './rirc'
+#Rirc.daemon
+Rirc::Driver.run
 
