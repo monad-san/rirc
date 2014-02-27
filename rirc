@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# rirc -- irc bot written by ruby
+# rirc -- irc bot with plugin system
 #
 
 #if File.symlink?(__FILE__)
